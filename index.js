@@ -40,9 +40,26 @@ app.post('/form', async (req, res) => {
   }
 });
 
+app.get('/run-birthday-job', async (req, res) => {
+  const token = req.query.token;
+
+  if (token !== process.env.SECRET_BIRTHDAY_TOKEN) {
+    return res.status(403).send('Unauthorized');
+  }
+  try {
+
+    await runBirthdayJob();
+    res.send('Birthday job ran successfully.');
+  } catch (err) {
+    console.error('Birthday job failed:', err);
+    res.status(500).send('Birthday job failed.');
+  }
+});
+
+
 
 // Cron job to run daily at 7
-cron.schedule('0 7 * * *', async () => {
+ const runBirthdayJob = async () => {
   console.log('Running cron job to check for birthdays...');
   const today = new Date();
   const usersWithBirthdayToday = await User.find({
@@ -62,7 +79,7 @@ cron.schedule('0 7 * * *', async () => {
       console.error(`Failed to send email to ${user.email}:`, err);
     }
   }
-});
+};
 
 
 const PORT = process.env.PORT || 5000;

@@ -1,0 +1,17 @@
+name: Trigger Birthday Job
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger birthday job on Render
+        env:
+          TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
+        run: |
+          curl -X GET "https://your-app-name.onrender.com/run-birthday-job?token=$TOKEN"
